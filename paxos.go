@@ -122,31 +122,50 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
   return false
 }
 
+func (px *Paxos) Sender(req Round3Req, rsp Round3Rsp, target int) {
+  for {
+    ok := call(px.peers[target], "Paxos.Learnerround3", &req, &rsp)
+    if (ok) {
+      return
+    }
+    time.Sleep(10 * time.Millisecond)
+  }
+}
+
 func (px *Paxos) Proposer(seq int, v interface{}) {
   roundnum := 0
 
   for {
-    if (px.Min() > seq) {
-      return
-    }
     roundnum = roundnum + 1
-
-    var req1 Round1Req
-    var rsp1 Round1Rsp
-    req1.Done = px.done[px.me]
-    req1.Me = px.me
-    req1.Round = roundnum*len(px.peers) + px.me
-    req1.Seq = seq
 
     maxv := interface{}(nil)
     numok := 0
     numtotal := 0
     maxround := -1
+    /*if (px.me == 0 && seq == 1) {
+      fmt.Println("START :")
+    }*/
     for i := range px.peers {
-      ok := call(px.peers[i], "Paxos.Acceptorround1", &req1, &rsp1)
+      var ok bool
+      var req1 Round1Req
+      var rsp1 Round1Rsp
+      req1.Done = px.done[px.me]
+      req1.Me = px.me
+      req1.Round = roundnum*len(px.peers) + px.me
+      req1.Seq = seq
+      if (i == px.me) {
+        px.Acceptorround1(&req1, &rsp1)
+        ok = true
+      } else {
+        ok = call(px.peers[i], "Paxos.Acceptorround1", &req1, &rsp1)
+      }
       if (ok) {
         numtotal = numtotal + 1
         if (rsp1.Ok) {
+/*          if (px.me == 0 && seq == 1) {
+            fmt.Println(i)
+            fmt.Println(rsp1)
+          }*/
           numok = numok + 1
           if (rsp1.Round > maxround) {
             maxround = rsp1.Round
@@ -163,21 +182,31 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
     }
 
     if (2*numok > len(px.peers)) {
-      var req2 Round2Req
-      var rsp2 Round2Rsp
-      req2.Round = roundnum*len(px.peers) + px.me
-      req2.Me = px.me
-      req2.Seq = seq
+
+      var value interface{}
       if (maxv == nil) {
-        req2.V = v
+        value = v
       } else {
-        req2.V = maxv
+        value = maxv
       }
 
       numok := 0
       numtotal := 0
       for i := range px.peers {
-        ok := call(px.peers[i], "Paxos.Acceptorround2", &req2, &rsp2)
+        var ok bool
+        var req2 Round2Req
+        var rsp2 Round2Rsp
+        req2.Round = roundnum*len(px.peers) + px.me
+        req2.Me = px.me
+        req2.Seq = seq
+        req2.V = value
+
+        if (i == px.me) {
+          px.Acceptorround2(&req2, &rsp2)
+          ok = true
+        } else {
+          ok = call(px.peers[i], "Paxos.Acceptorround2", &req2, &rsp2)
+        }
         if (ok) {
           numtotal = numtotal + 1
           if (rsp2.Ok) {
@@ -185,7 +214,17 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
           }
         }
       }
+      /*if (px.me == 0 && seq == 1) {
+        px.mu.Lock()
+        fmt.Print(px.me)
+        fmt.Print(" : ")
+        fmt.Print(numok)
+        fmt.Print(" : ")
+        fmt.Println(req2.V)
+        px.mu.Unlock()
+      }*/
       if (2*numtotal <= len(px.peers)) {
+        //v = value
         time.Sleep(10 * time.Millisecond)
         continue
       }
@@ -194,24 +233,17 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
 
         var req3 Round3Req
         var rsp3 Round3Rsp
-        req3.V = req2.V
+        req3.V = value
         req3.Seq = seq
 
         px.Learnerround3(&req3, &rsp3)
 
-        numtotal := 1
         for i := range px.peers {
           if (i != px.me) {
-            ok := call(px.peers[i], "Paxos.Learnerround3", &req3, &rsp3)
-            if (ok) {
-              numtotal = numtotal + 1
-            }
+            go px.Sender(req3, rsp3, i)
           }
         }
-
-        if (numtotal == len(px.peers)) {
-          return
-        }
+        return
       }
     }
   }
@@ -242,14 +274,28 @@ func (px *Paxos) Acceptorround1(req *Round1Req, rsp *Round1Rsp) error {
   }
 
   px.mu.Lock()
+  /*if (px.me == 1 && req.Seq == 1) {
+    fmt.Println("Hi")
+    fmt.Println(req.Round)
+    fmt.Println(ins.a_round)
+    fmt.Println(ins.maxv)
+  }*/
   if (req.Round > ins.a_round) {
     ins.a_round = req.Round
     rsp.Round = ins.maxn
     rsp.V = ins.maxv
+    /*if (px.me == 1 && req.Seq == 1) {
+      fmt.Print("Res = ")
+      fmt.Println(rsp.V)
+    }*/
     rsp.Ok = true
   } else {
     rsp.Ok = false
   }
+  /*if (px.me == 1 && req.Seq == 1) {
+    fmt.Print("Res = ")
+    fmt.Println(rsp)
+  }*/
   px.mu.Unlock()
 
   return nil
@@ -303,7 +349,10 @@ func (px *Paxos) Learnerround3(req *Round3Req, rsp *Round3Rsp) error {
 //
 func (px *Paxos) Start(seq int, v interface{}) {
   // Your code here.
-  if (seq < px.Min()) {
+  px.mu.Lock()
+  min := px.Min()
+  px.mu.Unlock()
+  if (seq < min) {
     return
   }
 
@@ -340,11 +389,9 @@ func (px *Paxos) Done(seq int) {
   if (seq > px.done[px.me]) {
     px.done[px.me] = seq
   }
-  px.mu.Unlock()
 
   min := px.Min()
 
-  px.mu.Lock()
   for i := range(px.instances) {
     if (i < min) {
       delete(px.instances, i)
