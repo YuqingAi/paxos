@@ -497,26 +497,23 @@ func main() {
 	var exist4 bool
 
 	var IP []string = make([]string, 3)
+	var Ports []string = make([]string, 3)
+
 	IP[0], exist1 = config["n01"]
 	IP[1], exist2 = config["n02"]
 	IP[2], exist3 = config["n03"]
 	Port, exist4 = config["port"]
+	Ports[0], _ = config["p01"]
+	Ports[1], _ = config["p02"]
+	Ports[2], _ = config["p03"]
 	if (!exist1 || !exist2 || !exist3 || !exist4) {
 		fmt.Println("Configuration file: Bad format!")
 		return
 	}
 
-//	for i:=0; i<3; i++ {
-//		IP[i] += Port
-//	}
-	var Ports []string = make([]string, 3)
-	Ports[0]="12342"
-	Ports[1]="54321"
-	Ports[2]="11111"
-
-	IP[0] += ":12342"
-	IP[1] += ":54321"
-	IP[2] += ":11111"
+	for i:=0; i<3; i++ {
+		IP[i] += ":" + Ports[i]
+	}
 
 	Data = make(map[string]string)
 	seq_next = 1
