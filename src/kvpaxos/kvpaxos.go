@@ -27,9 +27,9 @@ type ResultFmt struct {
 }
 
 type Operation struct  {
-	opr string
-	key string
-	value string
+	Opr string
+	Key string
+	Value string
 }
 
 var Lock sync.Mutex
@@ -51,22 +51,22 @@ func Do_others_opr(mySeq int, Opr Operation) {
 		if mySeq==seq_done+1 {
 			Lock.Lock()
 			seq_done++
-			if Opr.opr=="insert" {
-				_, existV2 := Data[Opr.key]
+			if Opr.Opr=="insert" {
+				_, existV2 := Data[Opr.Key]
 				if (!existV2) {
-					Data[Opr.key] = Opr.value
+					Data[Opr.Key] = Opr.Value
 				}
 			}
-			if Opr.opr=="delete" {
-				_, existV2 := Data[Opr.key]
+			if Opr.Opr=="delete" {
+				_, existV2 := Data[Opr.Key]
 				if (existV2) {
-					delete(Data, Opr.key)
+					delete(Data, Opr.Key)
 				}
 			}
-			if Opr.opr=="update" {
-				_, existV2 := Data[Opr.key]
+			if Opr.Opr=="update" {
+				_, existV2 := Data[Opr.Key]
 				if (existV2) {
-					Data[Opr.key] = Opr.value
+					Data[Opr.Key] = Opr.Value
 				}
 			}
 			myPaxos.Done(mySeq)
@@ -88,7 +88,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query, err := ioutil.ReadAll(r.Body)
-	fmt.Println("02")
+	fmt.Println(string(query))
 	if (err != nil) {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -116,7 +116,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	Lock.Unlock()
 	myOpr := Operation{"insert", k, v}
 
-	myPaxos.Start(mySeq, myOpr)
+	myPaxos.Start(mySeq, &myOpr)
 	var decide bool
 	var result Operation
 	var res interface{}
@@ -124,13 +124,15 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	to := 10 * time.Millisecond
 fmt.Println("0")
 	for decide!=true {
-		decide, res = myPaxos.Status(mySeq)
-		result = res.(Operation)
+		decide, _ = myPaxos.Status(mySeq)
+		fmt.Println("23333")
 		time.Sleep(to)
 		if to < 10 * time.Second {
 			to *= 2
 		}
 	}
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
 fmt.Println("1")
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
@@ -138,19 +140,21 @@ fmt.Println("1")
 		seq_next++
 		mySeq = seq_next
 		Lock.Unlock()
-		myPaxos.Start(mySeq, myOpr)
+		myPaxos.Start(mySeq, &myOpr)
 
 		decide = false
 		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
+			fmt.Println("23333")
 			decide, res = myPaxos.Status(mySeq)
-			result = res.(Operation)
 			time.Sleep(to)
 			if to < 10 * time.Second {
 				to *= 2
 			}
 		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
 	}
 fmt.Println("2")
 	for {

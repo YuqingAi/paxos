@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-var IP []string
 var Port string
 var Timeout time.Duration
 
@@ -31,8 +30,8 @@ func Insert(key string, value string, addr string) StatusFmt {
 		}
 	}()
 	data := url.Values{"key":{key}, "value":{value}}
-	req, _ := http.Post("http://"+addr+"/kv/insert", "application/x-www-form-urlencoded", bytes.NewBufferString(data.Encode()))
-	fmt.Println(req)
+	req, err := http.Post("http://"+addr+"/kv/insert", "application/x-www-form-urlencoded", bytes.NewBufferString(data.Encode()))
+	fmt.Println(err)
 	defer req.Body.Close()
 	res, _ := ioutil.ReadAll(req.Body)
 	fmt.Println(res)
@@ -197,8 +196,6 @@ func main() {
 	for i:=0; i<3; i++ {
 		IP[i] += ":" + Ports[i]
 	}
-
-
 
 	fmt.Println("test start...")
 	fmt.Println(Insert("key1", "value1", IP[0]))
