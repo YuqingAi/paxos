@@ -105,10 +105,10 @@ type Round3Rsp struct {
 func call(srv string, name string, args interface{}, reply interface{}) bool {
   c, err := rpc.Dial("unix", srv)
   if err != nil {
-    err1 := err.(*net.OpError)
+    /*err1 := err.(*net.OpError)
     if err1.Err != syscall.ENOENT && err1.Err != syscall.ECONNREFUSED {
       fmt.Printf("paxos Dial() failed: %v\n", err1)
-    }
+    }*/
     return false
   }
   defer c.Close()
@@ -118,7 +118,7 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
     return true
   }
 
-  fmt.Println(err)
+  /*fmt.Println(err)*/
   return false
 }
 
@@ -128,7 +128,7 @@ func (px *Paxos) Sender(req Round3Req, rsp Round3Rsp, target int) {
     if (ok) {
       return
     }
-    time.Sleep(10 * time.Millisecond)
+    time.Sleep(100 * time.Millisecond)
   }
 }
 
@@ -177,7 +177,7 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
       }
     }
     if (2*numtotal <= len(px.peers)) {
-      time.Sleep(10 * time.Millisecond)
+      time.Sleep(100 * time.Millisecond)
       continue
     }
 
@@ -225,7 +225,7 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
       }*/
       if (2*numtotal <= len(px.peers)) {
         //v = value
-        time.Sleep(10 * time.Millisecond)
+        time.Sleep(100 * time.Millisecond)
         continue
       }
 
