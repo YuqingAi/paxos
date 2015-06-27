@@ -77,9 +77,9 @@ func Do_others_opr(mySeq int, Opr Operation) {
 }
 
 func Insert(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("Insert!!")
 	var tmp StatusFmt
-
+	fmt.Println(r.Method)
 	if (r.Method != "POST") {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -88,14 +88,14 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query, err := ioutil.ReadAll(r.Body)
-
+	fmt.Println("02")
 	if (err != nil) {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
 	}
-
+	fmt.Println("03")
 	opr, err := url.ParseQuery(string(query))
 	keys, existK := opr["key"]
 	values, existV := opr["value"]
@@ -106,7 +106,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, string(res))
 		return
 	}
-
+	fmt.Println("04")
 	k := keys[0]
 	v := values[0]
 
@@ -122,6 +122,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	var res interface{}
 	decide = false
 	to := 10 * time.Millisecond
+fmt.Println("0")
 	for decide!=true {
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
@@ -130,7 +131,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			to *= 2
 		}
 	}
-
+fmt.Println("1")
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
 		Lock.Lock()
@@ -151,7 +152,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
+fmt.Println("2")
 	for {
 		if mySeq==seq_done+1 {
 			Lock.Lock()
@@ -169,6 +170,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+fmt.Println("3")
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
 	fmt.Fprint(w, string(ret))
@@ -466,7 +468,6 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 	os.Exit(0)
 }
 
-
 func main() {
 	arg_num := len(os.Args)
 	argv := make([]int, arg_num+1)
@@ -505,6 +506,18 @@ func main() {
 		return
 	}
 
+//	for i:=0; i<3; i++ {
+//		IP[i] += Port
+//	}
+	var Ports []string = make([]string, 3)
+	Ports[0]="12342"
+	Ports[1]="54321"
+	Ports[2]="11111"
+
+	IP[0] += ":12342"
+	IP[1] += ":54321"
+	IP[2] += ":11111"
+
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
@@ -520,6 +533,6 @@ func main() {
 	http.HandleFunc("/kvman/dump", Dump)
 	http.HandleFunc("/kvman/shutdown", Shutdown)
 	http.HandleFunc("/", Index)
-	position := IP[argv[1]-1] + ":" + Port
+	position := ":" + Ports[argv[1]]
 	http.ListenAndServe(position, nil)
 }
