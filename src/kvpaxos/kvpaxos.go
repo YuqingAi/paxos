@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"paxos"
+	"encoding/gob"
 )
 
 type StatusFmt struct {
@@ -77,7 +78,6 @@ func Do_others_opr(mySeq int, Opr Operation) {
 }
 
 func Insert(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Insert!!")
 	var tmp StatusFmt
 	fmt.Println(r.Method)
 	if (r.Method != "POST") {
@@ -95,7 +95,6 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, string(res))
 		return
 	}
-	fmt.Println("03")
 	opr, err := url.ParseQuery(string(query))
 	keys, existK := opr["key"]
 	values, existV := opr["value"]
@@ -106,26 +105,23 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, string(res))
 		return
 	}
-	fmt.Println("04")
 	k := keys[0]
 	v := values[0]
 
 	Lock.Lock()
-	seq_next++
 	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
 	myOpr := Operation{"insert", k, v}
 
-	myPaxos.Start(mySeq, &myOpr)
+	myPaxos.Start(mySeq, myOpr)
 	var decide bool
 	var result Operation
 	var res interface{}
 	decide = false
 	to := 10 * time.Millisecond
-fmt.Println("0")
 	for decide!=true {
 		decide, _ = myPaxos.Status(mySeq)
-		fmt.Println("23333")
 		time.Sleep(to)
 		if to < 10 * time.Second {
 			to *= 2
@@ -133,20 +129,18 @@ fmt.Println("0")
 	}
 	decide, res = myPaxos.Status(mySeq)
 	result = res.(Operation)
-fmt.Println("1")
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
 		Lock.Lock()
-		seq_next++
 		mySeq = seq_next
+		seq_next++
 		Lock.Unlock()
-		myPaxos.Start(mySeq, &myOpr)
+		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
 		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
-			fmt.Println("23333")
 			decide, res = myPaxos.Status(mySeq)
 			time.Sleep(to)
 			if to < 10 * time.Second {
@@ -156,7 +150,7 @@ fmt.Println("1")
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
 	}
-fmt.Println("2")
+
 	for {
 		if mySeq==seq_done+1 {
 			Lock.Lock()
@@ -174,7 +168,6 @@ fmt.Println("2")
 			break
 		}
 	}
-fmt.Println("3")
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
 	fmt.Fprint(w, string(ret))
@@ -214,8 +207,8 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	k := keys[0]
 
 	Lock.Lock()
-	seq_next++
 	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
 	myOpr := Operation{"delete", k, ""}
 
@@ -226,32 +219,34 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	decide = false
 	to := 10 * time.Millisecond
 	for decide!=true {
-		decide, res = myPaxos.Status(mySeq)
-		result = res.(Operation)
+		decide, _ = myPaxos.Status(mySeq)
 		time.Sleep(to)
 		if to < 10 * time.Second {
 			to *= 2
 		}
 	}
-
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
 		Lock.Lock()
-		seq_next++
 		mySeq = seq_next
+		seq_next++
 		Lock.Unlock()
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
+		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
-			result = res.(Operation)
 			time.Sleep(to)
 			if to < 10 * time.Second {
 				to *= 2
 			}
 		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
 	}
 
 	for {
@@ -291,8 +286,8 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	k := r.FormValue("key")
 
 	Lock.Lock()
-	seq_next++
 	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
 	myOpr := Operation{"get", k, ""}
 
@@ -303,32 +298,34 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	decide = false
 	to := 10 * time.Millisecond
 	for decide!=true {
-		decide, res = myPaxos.Status(mySeq)
-		result = res.(Operation)
+		decide, _ = myPaxos.Status(mySeq)
 		time.Sleep(to)
 		if to < 10 * time.Second {
 			to *= 2
 		}
 	}
-
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
 		Lock.Lock()
-		seq_next++
 		mySeq = seq_next
+		seq_next++
 		Lock.Unlock()
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
+		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
-			result = res.(Operation)
 			time.Sleep(to)
 			if to < 10 * time.Second {
 				to *= 2
 			}
 		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
 	}
 
 	for {
@@ -388,8 +385,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	v := values[0]
 
 	Lock.Lock()
-	seq_next++
 	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
 	myOpr := Operation{"update", k, v}
 
@@ -400,19 +397,19 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	decide = false
 	to := 10 * time.Millisecond
 	for decide!=true {
-		decide, res = myPaxos.Status(mySeq)
-		result = res.(Operation)
+		decide, _ = myPaxos.Status(mySeq)
 		time.Sleep(to)
 		if to < 10 * time.Second {
 			to *= 2
 		}
 	}
-
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
 	for result!=myOpr {
 		go Do_others_opr(mySeq, result)
 		Lock.Lock()
-		seq_next++
 		mySeq = seq_next
+		seq_next++
 		Lock.Unlock()
 		myPaxos.Start(mySeq, myOpr)
 
@@ -421,12 +418,13 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
-			result = res.(Operation)
 			time.Sleep(to)
 			if to < 10 * time.Second {
 				to *= 2
 			}
 		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
 	}
 
 	for {
@@ -473,6 +471,7 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	gob.Register(Operation{})
 	arg_num := len(os.Args)
 	argv := make([]int, arg_num+1)
 	for i := 1 ; i < arg_num; i++{

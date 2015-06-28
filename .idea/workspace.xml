@@ -30,10 +30,10 @@
       <file leaf-file-name="kvpaxos.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/kvpaxos/kvpaxos.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.58863634">
-              <caret line="114" column="21" selection-start-line="114" selection-start-column="21" selection-end-line="114" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.52840906">
+              <caret line="427" column="5" selection-start-line="427" selection-start-column="5" selection-end-line="427" selection-end-column="5" />
               <folding>
-                <element signature="e#14#126#0" expanded="true" />
+                <element signature="e#14#142#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -42,8 +42,8 @@
       <file leaf-file-name="paxos.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/paxos/paxos.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-31.481482">
-              <caret line="529" column="42" selection-start-line="529" selection-start-column="42" selection-end-line="529" selection-end-column="42" />
+            <state vertical-scroll-proportion="-15.851851">
+              <caret line="472" column="2" selection-start-line="472" selection-start-column="2" selection-end-line="472" selection-end-column="24" />
               <folding>
                 <element signature="e#758#908#0" expanded="true" />
               </folding>
@@ -67,7 +67,7 @@
         <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-6.0">
-              <caret line="10" column="15" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
+              <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -89,8 +89,8 @@
         <option value="$PROJECT_DIR$/settings.conf" />
         <option value="$PROJECT_DIR$/client.go" />
         <option value="$PROJECT_DIR$/src/paxos/paxos.go" />
-        <option value="$PROJECT_DIR$/src/conf/settings.conf" />
         <option value="$PROJECT_DIR$/src/kvpaxos/kvpaxos.go" />
+        <option value="$PROJECT_DIR$/src/conf/settings.conf" />
       </list>
     </option>
   </component>
@@ -448,14 +448,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.0">
-          <caret line="10" column="15" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -468,20 +460,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/paxos/paxos.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-31.481482">
-          <caret line="529" column="42" selection-start-line="529" selection-start-column="42" selection-end-line="529" selection-end-column="42" />
+        <state vertical-scroll-proportion="-15.851851">
+          <caret line="472" column="2" selection-start-line="472" selection-start-column="2" selection-end-line="472" selection-end-column="24" />
           <folding>
             <element signature="e#758#908#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.0">
+          <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/kvpaxos/kvpaxos.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.58863634">
-          <caret line="114" column="21" selection-start-line="114" selection-start-column="21" selection-end-line="114" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.52840906">
+          <caret line="427" column="5" selection-start-line="427" selection-start-column="5" selection-end-line="427" selection-end-column="5" />
           <folding>
-            <element signature="e#14#126#0" expanded="true" />
+            <element signature="e#14#142#0" expanded="true" />
           </folding>
         </state>
       </provider>
