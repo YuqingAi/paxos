@@ -28,6 +28,7 @@ type ResultFmt struct {
 }
 
 type Operation struct  {
+	Me int
 	Opr string
 	Key string
 	Value string
@@ -41,6 +42,7 @@ var Timeout time.Duration
 var seq_next int //next sequence number, initially 1
 var seq_done int //largest sequence number that is done initially 0
 var myPaxos *paxos.Paxos
+var Myid int
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	res := "Hello"
@@ -79,7 +81,6 @@ func Do_others_opr(mySeq int, Opr Operation) {
 
 func Insert(w http.ResponseWriter, r *http.Request) {
 	var tmp StatusFmt
-	fmt.Println(r.Method)
 	if (r.Method != "POST") {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -88,7 +89,6 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query, err := ioutil.ReadAll(r.Body)
-	fmt.Println(string(query))
 	if (err != nil) {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -112,7 +112,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	mySeq := seq_next
 	seq_next++
 	Lock.Unlock()
-	myOpr := Operation{"insert", k, v}
+	myOpr := Operation{Myid, "insert", k, v}
 
 	myPaxos.Start(mySeq, myOpr)
 	var decide bool
@@ -138,7 +138,6 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
-		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
@@ -153,6 +152,8 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
+
+			fmt.Println(mySeq)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -174,9 +175,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
-
 	var tmp StatusFmt
-
 	if (r.Method != "POST") {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -195,9 +194,8 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	opr, err := url.ParseQuery(string(query))
 	keys, existK := opr["key"]
-	values, existV := opr["value"]
 
-	if (err != nil || !existK || !existV || len(keys) != 1 || len(values) != 1) {
+	if (err != nil || !existK || len(keys) != 1 ) {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
@@ -205,12 +203,11 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	k := keys[0]
-
 	Lock.Lock()
 	mySeq := seq_next
 	seq_next++
 	Lock.Unlock()
-	myOpr := Operation{"delete", k, ""}
+	myOpr := Operation{Myid, "delete", k, ""}
 
 	myPaxos.Start(mySeq, myOpr)
 	var decide bool
@@ -236,7 +233,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
-		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
@@ -248,9 +244,10 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
 	}
-
 	for {
 		if mySeq==seq_done+1 {
+
+			fmt.Println(mySeq)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -289,7 +286,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	mySeq := seq_next
 	seq_next++
 	Lock.Unlock()
-	myOpr := Operation{"get", k, ""}
+	myOpr := Operation{Myid, "get", k, ""}
 
 	myPaxos.Start(mySeq, myOpr)
 	var decide bool
@@ -315,7 +312,6 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
-		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
@@ -330,6 +326,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
+			fmt.Println(mySeq)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -388,7 +385,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	mySeq := seq_next
 	seq_next++
 	Lock.Unlock()
-	myOpr := Operation{"update", k, v}
+	myOpr := Operation{Myid, "update", k, v}
 
 	myPaxos.Start(mySeq, myOpr)
 	var decide bool
@@ -414,7 +411,6 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		myPaxos.Start(mySeq, myOpr)
 
 		decide = false
-		decide = false
 		to := 10 * time.Millisecond
 		for decide!=true {
 			decide, res = myPaxos.Status(mySeq)
@@ -429,6 +425,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
+
+			fmt.Println(mySeq)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -477,7 +475,7 @@ func main() {
 	for i := 1 ; i < arg_num; i++{
 		argv[i],_ = strconv.Atoi(os.Args[i])
 	}
-
+	Myid = argv[1]
 	var config = map[string]string{}
 	Timeout = 5.0 * time.Second
 	bytes, err := ioutil.ReadFile("../conf/settings.conf")
@@ -525,8 +523,7 @@ func main() {
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
-	myPaxos = paxos.Make(IP, argv[1], nil)
-	fmt.Println(IP)
+	myPaxos = paxos.Make(IP, Myid, nil)
 
 	fmt.Println("Server " + strconv.Itoa(argv[1]) + " ready")
 	http.HandleFunc("/kv/insert", Insert)
@@ -537,7 +534,6 @@ func main() {
 	http.HandleFunc("/kvman/dump", Dump)
 	http.HandleFunc("/kvman/shutdown", Shutdown)
 	http.HandleFunc("/", Index)
-	position := ":" + Ports[argv[1]]
-	fmt.Println(position)
+	position := ":" + Ports[Myid]
 	http.ListenAndServe(position, nil)
 }

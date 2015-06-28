@@ -210,7 +210,6 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
           px.Acceptorround2(req2, rsp2)
           ok = true
         } else {
-          fmt.Println(px.peers[i])
           ok = call(px.peers[i], "Paxos.Acceptorround2", req2, rsp2)
         }
         if (ok) {
@@ -256,7 +255,7 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
 }
 
 func (px *Paxos) Acceptorround1(req *Round1Req, rsp *Round1Rsp) error {
-fmt.Println("Acceptorround1")
+//fmt.Println("Acceptorround1")
   px.mu.Lock()
   if (px.done[req.Me] < req.Done) {
     px.done[req.Me] = req.Done
@@ -308,7 +307,7 @@ fmt.Println("Acceptorround1")
 }
 
 func (px *Paxos) Acceptorround2(req *Round2Req, rsp *Round2Rsp) error {
-  fmt.Println("Acceptorround2")
+  //fmt.Println("Acceptorround2")
   ins, ok := px.instances[req.Seq]
   if (!ok) {
     px.mu.Lock()
@@ -332,7 +331,7 @@ func (px *Paxos) Acceptorround2(req *Round2Req, rsp *Round2Rsp) error {
 }
 
 func (px *Paxos) Learnerround3(req *Round3Req, rsp *Round3Rsp) error {
-  fmt.Println("Learnerround3")
+  //fmt.Println("Learnerround3")
   ins, ok := px.instances[req.Seq]
   if (!ok) {
     px.mu.Lock()
@@ -470,7 +469,6 @@ func (px *Paxos) Status(seq int) (bool, interface{}) {
   if (!ok || ok && !ins.decided) {
     return false, nil
   }
-  fmt.Println(ins.value)
   return true, ins.value
 }
 
