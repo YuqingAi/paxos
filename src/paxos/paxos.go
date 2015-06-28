@@ -522,12 +522,12 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
     // change "unix" to "tcp" to use over a network.
     //os.Remove(peers[me]) // only needed for "unix"
 
-    strs := strings.Split(peers[me], ':')
+    strs := strings.Split(peers[me], ":")
     if (len(strs) != 2) {
       log.Fatal("Bad IP address and port number format!")
     }
     port := strs[1]
-    l, e := net.Listen("tcp", port);
+    l, e := net.Listen("tcp", ":" + port);
     if e != nil {
       log.Fatal("listen error: ", e);
     }
