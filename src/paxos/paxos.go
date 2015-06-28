@@ -124,7 +124,11 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
 
 func (px *Paxos) Sender(req Round3Req, rsp Round3Rsp, target int) {
   for {
-    ok := call(px.peers[target], "Paxos.Learnerround3", &req, &rsp)
+    req3 := &Round3Req{}
+    rsp3 := &Round3Rsp{}
+    req3.V = req.V
+    req3.Seq = req.Seq
+    ok := call(px.peers[target], "Paxos.Learnerround3", req3, rsp3)
     if (ok) {
       return
     }
