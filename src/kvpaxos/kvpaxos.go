@@ -502,7 +502,7 @@ func main() {
 
 	var IP []string = make([]string, 3)
 	var Ports []string = make([]string, 3)
-
+	var Ports2 []string = make([]string, 3)
 	IP[0], exist1 = config["n01"]
 	IP[1], exist2 = config["n02"]
 	IP[2], exist3 = config["n03"]
@@ -510,20 +510,24 @@ func main() {
 	Ports[0], _ = config["p01"]
 	Ports[1], _ = config["p02"]
 	Ports[2], _ = config["p03"]
+	Ports2[0], _ = config["p11"]
+	Ports2[1], _ = config["p12"]
+	Ports2[2], _ = config["p13"]
+
 	if (!exist1 || !exist2 || !exist3 || !exist4) {
 		fmt.Println("Configuration file: Bad format!")
 		return
 	}
 
 	for i:=0; i<3; i++ {
-		IP[i] += ":" + Ports[i]
+		IP[i] += ":" + Ports2[i]
 	}
 
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
 	myPaxos = paxos.Make(IP, argv[1], nil)
-
+	fmt.Println(IP)
 
 	fmt.Println("Server " + strconv.Itoa(argv[1]) + " ready")
 	http.HandleFunc("/kv/insert", Insert)
@@ -535,5 +539,6 @@ func main() {
 	http.HandleFunc("/kvman/shutdown", Shutdown)
 	http.HandleFunc("/", Index)
 	position := ":" + Ports[argv[1]]
+	fmt.Println(position)
 	http.ListenAndServe(position, nil)
 }

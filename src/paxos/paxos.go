@@ -50,7 +50,7 @@ type Paxos struct {
   peers []string
   me int // index into peers[]
 
-         // Your data here.
+  // Your data here.
   instances map[int]*instance
   max int
   done map[int]int
@@ -167,10 +167,10 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
       if (ok) {
         numtotal = numtotal + 1
         if (rsp1.Ok) {
-/*          if (px.me == 0 && seq == 1) {
-            fmt.Println(i)
-            fmt.Println(rsp1)
-          }*/
+          /*          if (px.me == 0 && seq == 1) {
+					  fmt.Println(i)
+					  fmt.Println(rsp1)
+					}*/
           numok = numok + 1
           if (rsp1.Round > maxround) {
             maxround = rsp1.Round
