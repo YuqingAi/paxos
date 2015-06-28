@@ -103,7 +103,7 @@ type Round3Rsp struct {
 // please do not change this function.
 //
 func call(srv string, name string, args interface{}, reply interface{}) bool {
-  c, err := rpc.Dial("tcp", srv)
+  c, err := rpc.Dial("unix", srv)
   if err != nil {
     /*err1 := err.(*net.OpError)
     if err1.Err != syscall.ENOENT && err1.Err != syscall.ECONNREFUSED {
@@ -147,17 +147,17 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
     }*/
     for i := range px.peers {
       var ok bool
-      var req1 Round1Req
-      var rsp1 Round1Rsp
+      req1 := &Round1Req{}
+      rsp1 := &Round1Rsp{}
       req1.Done = px.done[px.me]
       req1.Me = px.me
       req1.Round = roundnum*len(px.peers) + px.me
       req1.Seq = seq
       if (i == px.me) {
-        px.Acceptorround1(&req1, &rsp1)
+        px.Acceptorround1(req1, rsp1)
         ok = true
       } else {
-        ok = call(px.peers[i], "Paxos.Acceptorround1", &req1, &rsp1)
+        ok = call(px.peers[i], "Paxos.Acceptorround1", req1, rsp1)
       }
       if (ok) {
         numtotal = numtotal + 1
@@ -194,18 +194,18 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
       numtotal := 0
       for i := range px.peers {
         var ok bool
-        var req2 Round2Req
-        var rsp2 Round2Rsp
+        req2 := &Round2Req{}
+        rsp2 := &Round2Rsp{}
         req2.Round = roundnum*len(px.peers) + px.me
         req2.Me = px.me
         req2.Seq = seq
         req2.V = value
 
         if (i == px.me) {
-          px.Acceptorround2(&req2, &rsp2)
+          px.Acceptorround2(req2, rsp2)
           ok = true
         } else {
-          ok = call(px.peers[i], "Paxos.Acceptorround2", &req2, &rsp2)
+          ok = call(px.peers[i], "Paxos.Acceptorround2", req2, rsp2)
         }
         if (ok) {
           numtotal = numtotal + 1
@@ -516,7 +516,7 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
     // prepare to receive connections from clients.
     // change "unix" to "tcp" to use over a network.
     os.Remove(peers[me]) // only needed for "unix"
-    l, e := net.Listen("tcp", peers[me]);
+    l, e := net.Listen("unix", peers[me]);
     if e != nil {
       log.Fatal("listen error: ", e);
     }
@@ -535,7 +535,7 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
             conn.Close()
           } else if px.unreliable && (rand.Int63() % 1000) < 200 {
             // process the request but force discard of reply.
-            c1 := conn.(*net.TCPConn)
+            c1 := conn.(*net.UnixConn)
             f, _ := c1.File()
             err := syscall.Shutdown(int(f.Fd()), syscall.SHUT_WR)
             if err != nil {
