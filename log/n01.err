@@ -1,0 +1,8 @@
+2015/06/30 00:38:51 method Done has wrong number of ins: 2
+2015/06/30 00:38:51 method Kill has wrong number of ins: 1
+2015/06/30 00:38:51 method Max has wrong number of ins: 1
+2015/06/30 00:38:51 method Min has wrong number of ins: 1
+2015/06/30 00:38:51 method Proposer reply type not a pointer: interface {}
+2015/06/30 00:38:51 method Sender has wrong number of ins: 4
+2015/06/30 00:38:51 method Start reply type not a pointer: interface {}
+2015/06/30 00:38:51 method Status has wrong number of ins: 2
