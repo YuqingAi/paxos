@@ -57,7 +57,7 @@ type Paxos struct {
 }
 
 type Round1Req struct {
-  Seq int
+  Seq ints
   Round int
   Me int
   Done int
@@ -125,6 +125,9 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
 
 func (px *Paxos) Sender(req Round3Req, rsp Round3Rsp, target int) {
   for {
+    if (px.dead == true) {
+        return
+    }
     req3 := &Round3Req{}
     rsp3 := &Round3Rsp{}
     req3.V = req.V
@@ -141,6 +144,9 @@ func (px *Paxos) Proposer(seq int, v interface{}) {
   roundnum := 0
 
   for {
+    if (px.dead == true) {
+        return
+    }
     roundnum = roundnum + 1
 
     maxv := interface{}(nil)
