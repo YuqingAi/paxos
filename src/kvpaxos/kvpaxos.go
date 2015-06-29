@@ -15,11 +15,11 @@ import (
 )
 
 type StatusFmt struct {
-	Success	bool	`json:"success"`
+	Success	string	`json:"success"`
 }
 
 type ValueFmt struct {
-	Success	bool	`json:"success"`
+	Success	string	`json:"success"`
 	Value	string	`json:value`
 }
 
@@ -82,7 +82,7 @@ func Do_others_opr(mySeq int, Opr Operation) {
 func Insert(w http.ResponseWriter, r *http.Request) {
 	var tmp StatusFmt
 	if (r.Method != "POST") {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -90,7 +90,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	query, err := ioutil.ReadAll(r.Body)
 	if (err != nil) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -100,7 +100,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	values, existV := opr["value"]
 
 	if (err != nil || !existK || !existV || len(keys) != 1 || len(values) != 1) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -159,11 +159,11 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			_, existV2 := Data[k]
 
 			if (existV2) {
-				tmp.Success = false
+				tmp.Success = "false"
 				Lock.Unlock()
 				break
 			}
-			tmp.Success = true
+			tmp.Success = "true"
 			Data[k] = v
 			Lock.Unlock()
 			break
@@ -177,7 +177,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 func Delete(w http.ResponseWriter, r *http.Request) {
 	var tmp StatusFmt
 	if (r.Method != "POST") {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -186,7 +186,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	query, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if (err != nil) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -196,7 +196,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	keys, existK := opr["key"]
 
 	if (err != nil || !existK || len(keys) != 1 ) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -253,11 +253,11 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 			_, existV2 := Data[k]
 
 			if (!existV2) {
-				tmp.Success = false
+				tmp.Success = "false"
 				Lock.Unlock()
 				break
 			}
-			tmp.Success = true
+			tmp.Success = "true"
 			delete(Data, k)
 			Lock.Unlock()
 			break
@@ -274,7 +274,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	var tmp ValueFmt
 	r.ParseForm()
 	if (r.Method != "GET") {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -332,11 +332,11 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			_, existV2 := Data[k]
 
 			if (!existV2) {
-				tmp.Success = false
+				tmp.Success = "false"
 				Lock.Unlock()
 				break
 			}
-			tmp.Success = true
+			tmp.Success = "true"
 			tmp.Value = Data[k]
 			Lock.Unlock()
 			break
@@ -352,7 +352,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	var tmp StatusFmt
 
 	if (r.Method != "POST") {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -361,7 +361,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	query, err := ioutil.ReadAll(r.Body)
 
 	if (err != nil) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -372,7 +372,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	values, existV := opr["value"]
 
 	if (err != nil || !existK || !existV || len(keys) != 1 || len(values) != 1) {
-		tmp.Success = false
+		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
 		fmt.Fprint(w, string(res))
 		return
@@ -432,11 +432,11 @@ func Update(w http.ResponseWriter, r *http.Request) {
 			_, existV2 := Data[k]
 
 			if (!existV2) {
-				tmp.Success = false
+				tmp.Success = "false"
 				Lock.Unlock()
 				break
 			}
-			tmp.Success = true
+			tmp.Success = "true"
 			Data[k] = v
 			Lock.Unlock()
 			break
@@ -540,4 +540,3 @@ func main() {
 		fmt.Println("Failed to listen!")
 	}
 }
-
