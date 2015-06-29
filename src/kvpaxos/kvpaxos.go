@@ -87,7 +87,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, string(res))
 		return
 	}
-
+	defer r.Body.Close()
 	query, err := ioutil.ReadAll(r.Body)
 	if (err != nil) {
 		tmp.Success = false
@@ -171,7 +171,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
-	fmt.Fprint(w, string(ret))
+	w.Write(ret)
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query, err := ioutil.ReadAll(r.Body)
-
+	defer r.Body.Close()
 	if (err != nil) {
 		tmp.Success = false
 		res, _ := json.Marshal(tmp)
@@ -265,7 +265,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
-	fmt.Fprint(w, string(ret))
+	w.Write(ret)
 }
 
 
@@ -281,7 +281,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	k := r.FormValue("key")
-
+	defer r.Body.Close()
 	Lock.Lock()
 	mySeq := seq_next
 	seq_next++
@@ -344,7 +344,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
-	fmt.Fprint(w, string(ret))
+	w.Write(ret)
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
@@ -357,7 +357,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, string(res))
 		return
 	}
-
+	defer r.Body.Close()
 	query, err := ioutil.ReadAll(r.Body)
 
 	if (err != nil) {
@@ -444,27 +444,31 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
-	fmt.Fprint(w, string(ret))
+	w.Write(ret)
 }
 
 func Countkey(w http.ResponseWriter, r *http.Request) {
 	var tmp ResultFmt
+	Lock.Lock()
 	tmp.Result = len(Data)
+	Lock.Unlock()
 	res, _ := json.Marshal(tmp)
-	fmt.Fprint(w, string(res))
+	w.Write(res)
 }
 
 func Dump(w http.ResponseWriter, r *http.Request) {
 	data := make([][2]string,0)
+	Lock.Lock()
 	for k, v := range Data {
 		data = append(data, [2]string{k, v})
 	}
+	Lock.Unlock()
 	res, _ := json.Marshal(data)
-	fmt.Fprint(w, string(res))
+	w.Write(res)
 }
 
 func Shutdown(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, nil)
+	w.Write(nil)
 	os.Exit(0)
 }
 
