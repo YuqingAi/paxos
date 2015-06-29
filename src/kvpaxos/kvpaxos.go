@@ -474,13 +474,9 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	gob.Register(Operation{})
-	arg_num := len(os.Args)
-	argv := make([]int, arg_num+1)
-	for i := 1 ; i < arg_num; i++{
-		argv[i],_ = strconv.Atoi(os.Args[i])
-	}
-	str := argv[1]
-	Myid, _ = strconv.Atoi(str[1]+str[2])
+	var str string
+	str = os.Args[1]
+	Myid, _ = strconv.Atoi(str[1:3])
 	var config = map[string]string{}
 	Timeout = 5.0 * time.Second
 	bytes, err := ioutil.ReadFile("../conf/settings.conf")
@@ -497,28 +493,39 @@ func main() {
 		return
 	}
 
-	var exist1 bool
-	var exist2 bool
-	var exist3 bool
-	var exist4 bool
+	var existp bool
 
-	var IP []string = make([]string, 3)
-	IP[0], exist1 = config["n01"]
-	IP[1], exist2 = config["n02"]
-	IP[2], exist3 = config["n03"]
-	Port, exist4 = config["port"]
-
-	if (!exist1 || !exist2 || !exist3 || !exist4) {
+	var IP []string = make([]string, 99)
+	var count int
+	var exist bool
+	count = 1
+	exist = false
+	var name string
+	for {
+		if count<10 {
+			name = "n0"+strconv.Itoa(count)
+		}else {
+			name = "n"+strconv.Itoa(count)
+		}
+		IP[count], exist = config[name]
+		if !exist {
+			break
+		}
+		count++
+	}
+	Port, existp = config["port"]
+	if (!existp || count<2) {
 		fmt.Println("Configuration file: Bad format!")
 		return
 	}
+	IP = IP[0:count]
 
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
 	myPaxos = paxos.Make(IP, Myid, nil)
 
-	fmt.Println("Server " + Myid + " ready")
+	fmt.Println("Server ready")
 	http.HandleFunc("/kv/insert", Insert)
 	http.HandleFunc("/kv/delete", Delete)
 	http.HandleFunc("/kv/get", Get)

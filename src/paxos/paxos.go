@@ -57,7 +57,7 @@ type Paxos struct {
 }
 
 type Round1Req struct {
-  Seq ints
+  Seq int
   Round int
   Me int
   Done int
