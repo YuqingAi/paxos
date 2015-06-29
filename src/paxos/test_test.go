@@ -19,31 +19,6 @@ func port(tag string, host int) string {
   return s
 }
 
-func myndecided(t *testing.T, pxa []*Paxos, seq int, my int) int {
-  count := 0
-  var v interface{}
-  for i := 0; i < len(pxa); i++ {
-    if pxa[i] != nil {
-      decided, v1 := pxa[i].Status(seq)
-      if decided {
-        if count > 0 && v != v1 {
-          if my==1 {
-            t.Fatalf("1 decided values do not match; seq=%v i=%v v=%v v1=%v",
-              seq, i, v, v1)
-          }
-          if my==2 {
-            t.Fatalf("2 decided values do not match; seq=%v i=%v v=%v v1=%v",
-              seq, i, v, v1)
-          }
-        }
-        count++
-        v = v1
-      }
-    }
-  }
-  return count
-}
-
 func ndecided(t *testing.T, pxa []*Paxos, seq int) int {
   count := 0
   var v interface{}
@@ -751,7 +726,7 @@ func TestPartition(t *testing.T) {
     pxa[0].Start(seq, seq * 10)
     pxa[3].Start(seq, (seq * 10) + 1)
     waitmajority(t, pxa, seq)
-    if myndecided(t, pxa, seq,1) > 3 {
+    if ndecided(t, pxa, seq) > 3 {
       t.Fatalf("too many decided")
     }
     
@@ -776,7 +751,7 @@ func TestPartition(t *testing.T) {
       pxa[i].Start(seq, (seq * 10) + i)
     }
     waitn(t, pxa, seq, 3)
-    if myndecided(t, pxa, seq,2) > 3 {
+    if ndecided(t, pxa, seq) > 3 {
       t.Fatalf("too many decided")
     }
     
@@ -852,7 +827,7 @@ func TestLots(t *testing.T) {
       // how many instances are in progress?
       nd := 0
       for i := 0; i < seq; i++ {
-        if myndecided(t, pxa, i, 1) == npaxos {
+        if ndecided(t, pxa, i) == npaxos {
           nd++
         }
       }
@@ -872,7 +847,7 @@ func TestLots(t *testing.T) {
     defer func() { ch3 <- true }()
     for done == false {
       for i := 0; i < seq; i++ {
-        myndecided(t, pxa, i, 2)
+        ndecided(t, pxa, i)
       }
       time.Sleep(time.Duration(rand.Int63() % 300) * time.Millisecond)
     }

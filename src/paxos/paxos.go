@@ -578,3 +578,4 @@ func Make(peers []string, me int, rpcs *rpc.Server) *Paxos {
 
   return px
 }
+

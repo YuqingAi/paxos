@@ -1,2 +1,0 @@
-# paxos
-OS project4

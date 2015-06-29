@@ -10,8 +10,8 @@ import (
 	"time"
 	"os"
 	"strconv"
-	"paxos"
 	"encoding/gob"
+	"../paxos"
 )
 
 type StatusFmt struct {
@@ -535,5 +535,9 @@ func main() {
 	http.HandleFunc("/kvman/shutdown", Shutdown)
 	http.HandleFunc("/", Index)
 	position := ":" + Port
-	http.ListenAndServe(position, nil)
+	err = http.ListenAndServe(position, nil)
+	if (err != nil) {
+		fmt.Println("Failed to listen!")
+	}
 }
+
