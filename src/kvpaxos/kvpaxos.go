@@ -479,6 +479,7 @@ func main() {
 	var str string
 	str = os.Args[1]
 	Myid, _ = strconv.Atoi(str[1:3])
+	Myid = Myid - 1
 	var config = map[string]string{}
 	Timeout = 5.0 * time.Second
 	bytes, err := ioutil.ReadFile("../conf/settings.conf")
@@ -509,7 +510,7 @@ func main() {
 		}else {
 			name = "n"+strconv.Itoa(count)
 		}
-		IP[count], exist = config[name]
+		IP[count - 1], exist = config[name]
 		if !exist {
 			break
 		}
@@ -520,11 +521,14 @@ func main() {
 		fmt.Println("Configuration file: Bad format!")
 		return
 	}
-	IP = IP[0:count]
+	IP = IP[0:count-1]
+	
+	fmt.Println(IP)
 
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
+	
 	myPaxos = paxos.Make(IP, Myid, nil)
 
 	fmt.Println("Server ready")
