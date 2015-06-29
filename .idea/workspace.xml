@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c8214d4d-f24f-468d-abb9-e22b0716ab26" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kvpaxos/kvpaxos.go" afterPath="$PROJECT_DIR$/src/kvpaxos/kvpaxos.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/conf/settings.conf" afterPath="$PROJECT_DIR$/src/conf/settings.conf" />
     </list>
     <ignored path="kvpaxos.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,14 +25,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="kvpaxos.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="kvpaxos.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/kvpaxos/kvpaxos.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6409091">
-              <caret line="469" column="55" selection-start-line="469" selection-start-column="55" selection-end-line="469" selection-end-column="55" />
+            <state vertical-scroll-proportion="-2.2222223">
+              <caret line="413" column="35" selection-start-line="413" selection-start-column="35" selection-end-line="413" selection-end-column="35" />
               <folding>
                 <element signature="e#14#142#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="paxos.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/paxos/paxos.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="333" column="4" selection-start-line="333" selection-start-column="4" selection-end-line="333" selection-end-column="4" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -47,11 +57,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.conf" pinned="false" current-in-tab="false">
+      <file leaf-file-name="settings.conf" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.0">
-              <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.034013607">
+              <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -72,9 +82,9 @@
       <list>
         <option value="$PROJECT_DIR$/settings.conf" />
         <option value="$PROJECT_DIR$/client.go" />
-        <option value="$PROJECT_DIR$/src/conf/settings.conf" />
         <option value="$PROJECT_DIR$/src/paxos/paxos.go" />
         <option value="$PROJECT_DIR$/src/kvpaxos/kvpaxos.go" />
+        <option value="$PROJECT_DIR$/src/conf/settings.conf" />
       </list>
     </option>
   </component>
@@ -466,24 +476,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.0">
-          <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/paxos/paxos.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.962963">
-          <caret line="333" column="4" selection-start-line="333" selection-start-column="4" selection-end-line="333" selection-end-column="4" />
-          <folding>
-            <element signature="e#758#908#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/go/src/net/http/server.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-97.59259">
@@ -508,13 +500,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/paxos/paxos.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="333" column="4" selection-start-line="333" selection-start-column="4" selection-end-line="333" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/kvpaxos/kvpaxos.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6409091">
-          <caret line="469" column="55" selection-start-line="469" selection-start-column="55" selection-end-line="469" selection-end-column="55" />
+        <state vertical-scroll-proportion="-2.2222223">
+          <caret line="413" column="35" selection-start-line="413" selection-start-column="35" selection-end-line="413" selection-end-column="35" />
           <folding>
             <element signature="e#14#142#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/conf/settings.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.034013607">
+          <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>
