@@ -175,7 +175,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
-	var tmp StatusFmt
+	var tmp ValueFmt
 	if (r.Method != "POST") {
 		tmp.Success = "false"
 		res, _ := json.Marshal(tmp)
@@ -257,6 +257,8 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 				Lock.Unlock()
 				break
 			}
+			
+			tmp.Value = Data[k]
 			tmp.Success = "true"
 			delete(Data, k)
 			Lock.Unlock()
