@@ -1,0 +1,11 @@
+To compile the project, run ./compile.sh
+
+To start the 1st server, run ./bin/start_server n01
+To start the 2nd server, run ./bin/start_server n02
+To start the 3rd server, run ./bin/start_server n03
+To stop the 1st server, run ./bin/stop_server n01
+To stop other servers, just follow this instruction format.
+At most 99 servers are supported. Change their address and port in ./conf/settings.conf
+
+If you want to start a new test, make sure the instances of servers of the last test have all been stopped.
+
