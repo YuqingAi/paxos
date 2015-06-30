@@ -1,5 +1,8 @@
+The Source Codes:
+All source codes are in the src directory. Our code includes "kvpaxos/kvpaxos.go" which is the server, and "paxos/paxos.go" which is the Paxos library.
+
 Compile the Project:
-To compile the project, run ./compile.sh. It will put everything in place. 
+To compile the project, run ./compile.sh. It will put everything in place. Compiled excutable file "server" will be put into the bin directory.
 
 The Configuration File:
 The configuration file is stored in conf/settings.conf as JSON format as required. The number of servers, their IPs, and their ports (both ports for receiving requests from the clients and ports for paxos peers) is defined in this file. "port" field is the ports for receiving requests from the clients. And "n??" field is the IP address and port for paxos peer of kvpaxos server whose id is n??( in the format "IP:port"). Up to 99 servers can be supported.
