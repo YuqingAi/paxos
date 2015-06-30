@@ -1,0 +1,6 @@
+BASEDIR=$(dirname $0)
+cd $BASEDIR
+file=../var/kvpaxos_$1.pid
+ppid=$(cat $file)
+kill $ppid
+
