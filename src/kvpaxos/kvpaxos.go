@@ -76,6 +76,7 @@ func Do_others_opr(mySeq int, Opr Operation) {
 			Lock.Unlock()
 			break
 		}
+		time.Sleep(1 * time.Millisecond)
 	}
 }
 
@@ -148,6 +149,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		}
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
 	}
 
 	for {
@@ -168,6 +170,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			Lock.Unlock()
 			break
 		}
+		time.Sleep(1 * time.Millisecond)
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
@@ -243,6 +246,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		}
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
 	}
 	for {
 		if mySeq==seq_done+1 {
@@ -264,6 +268,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 			Lock.Unlock()
 			break
 		}
+		time.Sleep(1 * time.Millisecond)
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
@@ -324,6 +329,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		}
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
 	}
 
 	for {
@@ -343,6 +349,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			Lock.Unlock()
 			break
 		}
+		time.Sleep(1 * time.Millisecond)
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
@@ -423,6 +430,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		}
 		decide, res = myPaxos.Status(mySeq)
 		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
 	}
 
 	for {
@@ -443,6 +451,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 			Lock.Unlock()
 			break
 		}
+		time.Sleep(1 * time.Millisecond)
 	}
 	myPaxos.Done(mySeq)
 	ret, _ := json.Marshal(tmp)
@@ -523,8 +532,6 @@ func main() {
 	}
 	IP = IP[0:count-1]
 	
-	fmt.Println(IP)
-
 	Data = make(map[string]string)
 	seq_next = 1
 	seq_done = 0
