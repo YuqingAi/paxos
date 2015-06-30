@@ -460,25 +460,203 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 func Countkey(w http.ResponseWriter, r *http.Request) {
 	var tmp ResultFmt
+	r.ParseForm()
+	if (r.Method != "GET") {
+		res, _ := json.Marshal(tmp)
+		fmt.Fprint(w, string(res))
+		return
+	}
+
 	Lock.Lock()
-	tmp.Result = len(Data)
+	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
-	res, _ := json.Marshal(tmp)
-	w.Write(res)
+	myOpr := Operation{Myid, "countkey", "", ""}
+
+	myPaxos.Start(mySeq, myOpr)
+	var decide bool
+	var result Operation
+	var res interface{}
+	decide = false
+	to := 10 * time.Millisecond
+	for decide!=true {
+		decide, _ = myPaxos.Status(mySeq)
+		time.Sleep(to)
+		if to < 10 * time.Second {
+			to *= 2
+		}
+	}
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
+	for result!=myOpr {
+		go Do_others_opr(mySeq, result)
+		Lock.Lock()
+		mySeq = seq_next
+		seq_next++
+		Lock.Unlock()
+		myPaxos.Start(mySeq, myOpr)
+
+		decide = false
+		to := 10 * time.Millisecond
+		for decide!=true {
+			decide, res = myPaxos.Status(mySeq)
+			time.Sleep(to)
+			if to < 10 * time.Second {
+				to *= 2
+			}
+		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
+	}
+
+	for {
+		if mySeq==seq_done+1 {
+			fmt.Println(mySeq)
+			Lock.Lock()
+			tmp.Result = len(Data)
+			Lock.Unlock()
+			break
+		}
+		time.Sleep(1 * time.Millisecond)
+	}
+	myPaxos.Done(mySeq)
+	ret, _ := json.Marshal(tmp)
+	w.Write(ret)
 }
 
 func Dump(w http.ResponseWriter, r *http.Request) {
-	data := make([][2]string,0)
-	Lock.Lock()
-	for k, v := range Data {
-		data = append(data, [2]string{k, v})
+	var tmp ValueFmt
+	r.ParseForm()
+	if (r.Method != "GET") {
+		tmp.Success = "false"
+		res, _ := json.Marshal(tmp)
+		fmt.Fprint(w, string(res))
+		return
 	}
+
+	Lock.Lock()
+	mySeq := seq_next
+	seq_next++
 	Lock.Unlock()
-	res, _ := json.Marshal(data)
-	w.Write(res)
+	myOpr := Operation{Myid, "dump", "", ""}
+
+	myPaxos.Start(mySeq, myOpr)
+	var decide bool
+	var result Operation
+	var res interface{}
+	decide = false
+	to := 10 * time.Millisecond
+	for decide!=true {
+		decide, _ = myPaxos.Status(mySeq)
+		time.Sleep(to)
+		if to < 10 * time.Second {
+			to *= 2
+		}
+	}
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
+	for result!=myOpr {
+		go Do_others_opr(mySeq, result)
+		Lock.Lock()
+		mySeq = seq_next
+		seq_next++
+		Lock.Unlock()
+		myPaxos.Start(mySeq, myOpr)
+
+		decide = false
+		to := 10 * time.Millisecond
+		for decide!=true {
+			decide, res = myPaxos.Status(mySeq)
+			time.Sleep(to)
+			if to < 10 * time.Second {
+				to *= 2
+			}
+		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
+	}
+
+	data := make([][2]string,0)
+	for {
+		if mySeq==seq_done+1 {
+			fmt.Println(mySeq)
+			Lock.Lock()
+			for k, v := range Data {
+				data = append(data, [2]string{k, v})
+			}
+			Lock.Unlock()
+			break
+		}
+		time.Sleep(1 * time.Millisecond)
+	}
+	myPaxos.Done(mySeq)
+	ret, _ := json.Marshal(data)
+	w.Write(ret)
 }
 
 func Shutdown(w http.ResponseWriter, r *http.Request) {
+	var tmp ValueFmt
+	r.ParseForm()
+	if (r.Method != "GET") {
+		tmp.Success = "false"
+		res, _ := json.Marshal(tmp)
+		fmt.Fprint(w, string(res))
+		return
+	}
+
+	Lock.Lock()
+	mySeq := seq_next
+	seq_next++
+	Lock.Unlock()
+	myOpr := Operation{Myid, "shutdown", "", ""}
+
+	myPaxos.Start(mySeq, myOpr)
+	var decide bool
+	var result Operation
+	var res interface{}
+	decide = false
+	to := 10 * time.Millisecond
+	for decide!=true {
+		decide, _ = myPaxos.Status(mySeq)
+		time.Sleep(to)
+		if to < 10 * time.Second {
+			to *= 2
+		}
+	}
+	decide, res = myPaxos.Status(mySeq)
+	result = res.(Operation)
+	for result!=myOpr {
+		go Do_others_opr(mySeq, result)
+		Lock.Lock()
+		mySeq = seq_next
+		seq_next++
+		Lock.Unlock()
+		myPaxos.Start(mySeq, myOpr)
+
+		decide = false
+		to := 10 * time.Millisecond
+		for decide!=true {
+			decide, res = myPaxos.Status(mySeq)
+			time.Sleep(to)
+			if to < 10 * time.Second {
+				to *= 2
+			}
+		}
+		decide, res = myPaxos.Status(mySeq)
+		result = res.(Operation)
+		time.Sleep(1 * time.Millisecond)
+	}
+
+	for {
+		if mySeq==seq_done+1 {
+			fmt.Println(mySeq)
+			break
+		}
+		time.Sleep(1 * time.Millisecond)
+	}
+	myPaxos.Done(mySeq)
 	w.Write(nil)
 	os.Exit(0)
 }
