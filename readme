@@ -1,11 +1,10 @@
-To compile the project, run ./compile.sh
+Compile the Project:
+To compile the project, run ./compile.sh. It will put everything in place. 
 
-To start the 1st server, run ./bin/start_server n01
-To start the 2nd server, run ./bin/start_server n02
-To start the 3rd server, run ./bin/start_server n03
-To stop the 1st server, run ./bin/stop_server n01
-To stop other servers, just follow this instruction format.
-At most 99 servers are supported. Change their address and port in ./conf/settings.conf
+The Configuration File:
+The configuration file is stored in conf/settings.conf as JSON format as required. The number of servers, their IPs, and their ports (both ports for receiving requests from the clients and ports for paxos peers) is defined in this file. "port" field is the ports for receiving requests from the clients. And "n??" field is the IP address and port for paxos peer of kvpaxos server whose id is n??( in the format "IP:port"). Up to 99 servers can be supported.
 
+Start and Stop servers:
+To start the server with id n??, run ./bin/start_server n?? (e.g. >>./bin/start_server n01).
+To stop the server with id n??, run ./bin/stop_server n?? (e.g. >>./bin/stop_server n01).
 If you want to start a new test, make sure the instances of servers of the last test have all been stopped.
-
