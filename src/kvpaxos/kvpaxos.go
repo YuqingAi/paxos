@@ -675,8 +675,7 @@ func main() {
 	Myid = Myid - 1
 	var config = map[string]string{}
 	Timeout = 5.0 * time.Second
-	bytes, err := ioutil.ReadFile("../../conf/settings.conf")
-
+	bytes, err := ioutil.ReadFile("../conf/settings.conf")
 	if (err != nil) {
 		fmt.Println("Missing configuration file!")
 		return
