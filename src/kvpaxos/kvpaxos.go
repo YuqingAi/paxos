@@ -657,7 +657,7 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 			Lock.Lock()
 			seq_done++
 			fmt.Println(mySeq, "Shutdown!")
-			px.Kill()
+			myPaxos.Kill()
 			Lock.Unlock()
 			break
 		}
