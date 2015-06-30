@@ -515,6 +515,7 @@ func Countkey(w http.ResponseWriter, r *http.Request) {
 		if mySeq==seq_done+1 {
 			fmt.Println(mySeq, result)
 			Lock.Lock()
+			seq_done++
 			tmp.Result = len(Data)
 			Lock.Unlock()
 			break
@@ -584,6 +585,7 @@ func Dump(w http.ResponseWriter, r *http.Request) {
 		if mySeq==seq_done+1 {
 			fmt.Println(mySeq, result)
 			Lock.Lock()
+			seq_done++
 			for k, v := range Data {
 				data = append(data, [2]string{k, v})
 			}
@@ -652,6 +654,9 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
+			Lock.Lock()
+			seq_done++
+			Lock.Unlock()
 			fmt.Println(mySeq, "Shutdown!")
 			break
 		}
