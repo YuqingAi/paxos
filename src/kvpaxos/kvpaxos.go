@@ -540,7 +540,7 @@ func Dump(w http.ResponseWriter, r *http.Request) {
 	Lock.Lock()
 	mySeq := seq_next
 	seq_next++
-	Lock.Unlock()
+	Lock.Unlock() 
 	myOpr := Operation{Myid, "dump", "", ""}
 
 	myPaxos.Start(mySeq, myOpr)
@@ -656,8 +656,8 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 		if mySeq==seq_done+1 {
 			Lock.Lock()
 			seq_done++
-			Lock.Unlock()
 			fmt.Println(mySeq, "Shutdown!")
+			Lock.Unlock()
 			break
 		}
 		time.Sleep(1 * time.Millisecond)
@@ -676,6 +676,7 @@ func main() {
 	var config = map[string]string{}
 	Timeout = 5.0 * time.Second
 	bytes, err := ioutil.ReadFile("../conf/settings.conf")
+
 	if (err != nil) {
 		fmt.Println("Missing configuration file!")
 		return
