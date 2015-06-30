@@ -52,6 +52,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func Do_others_opr(mySeq int, Opr Operation) {
 	for {
 		if mySeq==seq_done+1 {
+			fmt.Println(mySeq, Opr)
 			Lock.Lock()
 			seq_done++
 			if Opr.Opr=="insert" {
@@ -155,7 +156,7 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	for {
 		if mySeq==seq_done+1 {
 
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -251,7 +252,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	for {
 		if mySeq==seq_done+1 {
 
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -334,7 +335,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -436,7 +437,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	for {
 		if mySeq==seq_done+1 {
 
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			seq_done++
 			_, existV2 := Data[k]
@@ -512,7 +513,7 @@ func Countkey(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			tmp.Result = len(Data)
 			Lock.Unlock()
@@ -581,7 +582,7 @@ func Dump(w http.ResponseWriter, r *http.Request) {
 	data := make([][2]string,0)
 	for {
 		if mySeq==seq_done+1 {
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, result)
 			Lock.Lock()
 			for k, v := range Data {
 				data = append(data, [2]string{k, v})
@@ -651,7 +652,7 @@ func Shutdown(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		if mySeq==seq_done+1 {
-			fmt.Println(mySeq)
+			fmt.Println(mySeq, "Shutdown!")
 			break
 		}
 		time.Sleep(1 * time.Millisecond)
